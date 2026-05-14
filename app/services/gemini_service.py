@@ -23,7 +23,7 @@ def build_prompt(req: ChatRequest) -> str:
 {req.message}
 
 [답변 조건]
-- 200자 이내로 핵심만 간단히 답변해줘.
+- 질문의 내용과 복잡도에 맞게 충분히 자세하게 답변해줘.
 - 불필요한 인사말이나 맺음말은 생략해줘.
 - 답변 텍스트만 출력해줘 (안내 문구 없이).
 """
@@ -43,7 +43,7 @@ async def chat_reply(req: ChatRequest) -> str:
         prompt,
         generation_config=genai.GenerationConfig(
             temperature=0.7,
-            max_output_tokens=512,
+            max_output_tokens=2048,
         ),
     )
 
