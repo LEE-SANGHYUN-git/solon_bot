@@ -134,8 +134,8 @@ async def chat_reply(req: ChatRequest) -> str:
         model.generate_content_async(
             prompt,
             generation_config=genai.GenerationConfig(
-                temperature=0.7,
-                max_output_tokens=1024,
+                temperature=0.3,
+                max_output_tokens=3096,
             ),
         ),
         timeout=GEMINI_TIMEOUT_SEC,
