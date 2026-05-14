@@ -1,3 +1,5 @@
+import asyncio
+
 import google.generativeai as genai
 from app.core.config import settings
 from app.schemas.summarize import ChatRequest
@@ -7,6 +9,7 @@ from app.schemas.summarize import ChatRequest
 genai.configure(api_key=settings.GEMINI_API_KEY)
 
 PING_MESSAGE = "__ping__"
+GEMINI_TIMEOUT_SEC = 60  # 봇 스크립트 TIMEOUT_MS(60000)와 동일
 
 
 def build_prompt(req: ChatRequest) -> str:
@@ -39,12 +42,16 @@ async def chat_reply(req: ChatRequest) -> str:
     model = genai.GenerativeModel(model_name=settings.GEMINI_MODEL)
     prompt = build_prompt(req)
 
-    response = await model.generate_content_async(
-        prompt,
-        generation_config=genai.GenerationConfig(
-            temperature=0.7,
-            max_output_tokens=2048,
+    response = await asyncio.wait_for(
+        model.generate_content_async(
+            prompt,
+            generation_config=genai.GenerationConfig(
+                temperature=0.7,
+                max_output_tokens=1024,
+            ),
         ),
+        timeout=GEMINI_TIMEOUT_SEC,
     )
 
     return response.text.strip()
+
