@@ -71,9 +71,8 @@ def build_url_prompt(url: str, title: str, content: str, site_name: str) -> str:
 {content}
 
 [출력 형식 — 아래를 반드시 그대로 따라줘. 다른 말은 절대 붙이지 마.]
-위에 제공된 url에 대한 사이트 요약입니다.
 
-👉[{title}]
+👉[{title}] 에 대한 사이트 요약입니다.
 
 이모지 핵심 내용 1 (1~2문장으로 간결하게)
 이모지 핵심 내용 2 (1~2문장으로 간결하게)
