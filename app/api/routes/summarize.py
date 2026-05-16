@@ -33,6 +33,8 @@ async def summarize(req: ChatRequest) -> ChatResponse:
     """
     try:
         reply = await chat_reply(req)
+        if reply is None:
+            return ChatResponse(reply="")
     except AsyncTimeoutError:
         return ChatResponse(reply="⏱️ 응답 생성에 60초가 넘게 걸렸어요. 잠시 후 다시 시도해주세요.")
     except genai.types.BlockedPromptException:

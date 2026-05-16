@@ -110,25 +110,27 @@ def build_chat_prompt(req: ChatRequest) -> str:
 
 # ── 메인 함수 ────────────────────────────────────────────────────────────────
 
-async def chat_reply(req: ChatRequest) -> str:
-    """카카오봇 메시지를 처리하고 Gemini 답장을 반환한다."""
+async def chat_reply(req: ChatRequest) -> str | None:
+    """카카오봇 메시지를 처리하고 Gemini 답장을 반환한다.
+    URL이 없는 메시지는 None을 반환하여 응답하지 않는다.
+    """
 
     # 핑 처리
     if req.message.strip() == PING_MESSAGE:
         return "pong"
 
-    # URL 감지
+    # URL이 없으면 무응답
     url_match = URL_PATTERN.search(req.message)
-    if url_match:
-        url = url_match.group().rstrip(")")  # 괄호 끝 문자 제거 방지
-        try:
-            title, content, site_name = await fetch_page(url)
-            prompt = build_url_prompt(url, title, content, site_name)
-        except Exception as e:
-            # 페이지 가져오기 실패 시 일반 응답으로 fallback
-            prompt = build_chat_prompt(req)
-    else:
-        prompt = build_chat_prompt(req)
+    if not url_match:
+        return None
+
+    url = url_match.group().rstrip(")")  # 괄호 끝 문자 제거 방지
+    try:
+        title, content, site_name = await fetch_page(url)
+        prompt = build_url_prompt(url, title, content, site_name)
+    except Exception:
+        # 페이지 가져오기 실패 시 무응답
+        return None
 
     model = genai.GenerativeModel(model_name=settings.GEMINI_MODEL)
     response = await asyncio.wait_for(
